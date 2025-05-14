@@ -23,9 +23,9 @@ const Login = () => {
     const validPassword = 'admin123'
 
     if (data.username === validUsername && data.password === validPassword) {
-      // Store login state in localStorage
-      localStorage.setItem('isLoggedIn', 'true')
-      // Redirect to dashboard or home page
+      // Store login state in sessionStorage
+      sessionStorage.setItem('isLoggedIn', 'true')
+      // Redirect to admin page
       navigate('/admin')
     } else {
       setLoginError('Usuario o contraseña incorrectos')

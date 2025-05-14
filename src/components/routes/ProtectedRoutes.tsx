@@ -6,10 +6,10 @@ interface ProtectedRoutesProps {
 }
 
 const ProtectedRoutes = ({ children }: ProtectedRoutesProps) => {
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'
+  const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true'
 
   if (!isLoggedIn) {
-    return <Navigate to="/login" />
+    return <Navigate to="/" />
   }
 
   return <>{children}</>
