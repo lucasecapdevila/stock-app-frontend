@@ -1,13 +1,6 @@
 import { useState } from 'react';
 import Navbar from '../common/Navbar';
-
-interface Product {
-  id: string;
-  name: string;
-  category: string;
-  price: number;
-  stock: number;
-}
+import type { Product } from '../../types/dashboard.types';
 
 const mockProducts: Product[] = [
   { id: '1', name: 'Filtro de Aceite Toyota Corolla', category: 'Filtros', price: 15.99, stock: 45 },

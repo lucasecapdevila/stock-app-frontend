@@ -2,11 +2,6 @@ import { useForm } from 'react-hook-form'
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 
-type LoginFormInputs = {
-  username: string
-  password: string
-}
-
 const Login = () => {
   const navigate = useNavigate()
   const [loginError, setLoginError] = useState<string>('')
