@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
+import type { LoginFormInputs } from '../../types/login.types'
 
 const Login = () => {
   const navigate = useNavigate()
