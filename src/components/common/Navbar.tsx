@@ -76,20 +76,13 @@ const Navbar = () => {
 
           {/* Desktop login/logout button */}
           <div className="hidden md:flex items-center">
-            {isLoggedIn ? (
+            {isLoggedIn && (
               <button 
                 onClick={handleLogout}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 flex items-center gap-2"
               >
                 Cerrar Sesión
               </button>
-            ) : (
-              <Link 
-                to="/"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
-              >
-                Iniciar Sesión
-              </Link>
             )}
           </div>
         </div>
