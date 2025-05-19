@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import Navbar from '../common/Navbar';
 import type { Product } from '../../types/dashboard.types';
 
 const mockProducts: Product[] = [
@@ -14,7 +13,17 @@ const mockProducts: Product[] = [
   { id: '9', name: 'Aceite de Transmisión 75W-90 1L', category: 'Lubricantes', price: 14.99, stock: 40 },
   { id: '10', name: 'Bomba de Agua Nissan Sentra', category: 'Motor', price: 65.99, stock: 12 },
   { id: '11', name: 'Kit de Embrague Honda CBR600', category: 'Transmisión', price: 199.99, stock: 8 },
-  { id: '12', name: 'Filtro de Combustible Toyota Camry', category: 'Filtros', price: 18.99, stock: 35 }
+  { id: '12', name: 'Filtro de Combustible Toyota Camry', category: 'Filtros', price: 18.99, stock: 35 },
+  { id: '13', name: 'Radiador Honda Accord', category: 'Refrigeración', price: 159.99, stock: 10 },
+  { id: '14', name: 'Kit de Correa de Accesorios Hyundai Tucson', category: 'Motor', price: 89.99, stock: 22 },
+  { id: '15', name: 'Sensor de Oxígeno Universal', category: 'Sensores', price: 45.99, stock: 50 },
+  { id: '16', name: 'Aceite de Diferencial 80W-90 1L', category: 'Lubricantes', price: 12.99, stock: 30 },
+  { id: '17', name: 'Filtro de Cabina Toyota RAV4', category: 'Filtros', price: 24.99, stock: 28 },
+  { id: '18', name: 'Kit de Juntas Motor Chevrolet Cruze', category: 'Motor', price: 149.99, stock: 15 },
+  { id: '19', name: 'Bomba de Dirección Hidráulica Ford Ranger', category: 'Dirección', price: 189.99, stock: 8 },
+  { id: '20', name: 'Kit de Suspensión Delantera Volkswagen Golf', category: 'Suspensión', price: 299.99, stock: 12 },
+  { id: '21', name: 'Sensor MAP Universal', category: 'Sensores', price: 39.99, stock: 45 },
+  { id: '22', name: 'Filtro de Transmisión Automática', category: 'Filtros', price: 29.99, stock: 33 }
 ];
 
 const Dashboard = () => {
@@ -37,10 +46,9 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
-      <div className="p-4 sm:p-8">
-        <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-md p-4 sm:p-6">
+    <div className="flex-1 bg-gray-50 overflow-auto">
+      <div className="h-full p-2 sm:p-8">
+        <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-md p-2 sm:p-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div>
               <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Panel de Productos</h1>
@@ -57,32 +65,32 @@ const Dashboard = () => {
             </button>
           </div>
           
-          <div className="relative">
+          <div className="relative -mx-2 sm:mx-0">
             {/* Scroll indicator for mobile */}
-            <div className="md:hidden absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-400 animate-pulse">
+            <div className="md:hidden absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-400 animate-pulse">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </div>
 
-            <div className="overflow-x-auto scrollbar-hide">
+            <div className="overflow-x-auto">
               <div className="min-w-[800px]">
                 <table className="w-full bg-white border border-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 sm:px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Nombre
                       </th>
-                      <th className="px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 sm:px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Categoría
                       </th>
-                      <th className="px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 sm:px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Precio
                       </th>
-                      <th className="px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 sm:px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Stock
                       </th>
-                      <th className="px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 sm:px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Acciones
                       </th>
                     </tr>
@@ -90,19 +98,19 @@ const Dashboard = () => {
                   <tbody className="divide-y divide-gray-200">
                     {products.map((product) => (
                       <tr key={product.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {product.name}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {product.category}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           ${product.price.toFixed(2)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {product.stock}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           <div className="flex space-x-2">
                             <button 
                               onClick={() => handleEdit(product.id)}

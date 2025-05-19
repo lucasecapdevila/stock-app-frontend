@@ -1,5 +1,4 @@
 import { BrowserRouter, Route, Routes, Navigate } from "react-router";
-import Login from "./components/pages/Login";
 import Home from "./components/pages/Home";
 import ProtectedRoutes from "./components/routes/ProtectedRoutes";
 import AdminRoutes from "./components/routes/AdminRoutes";
@@ -16,7 +15,6 @@ function App() {
         <main className="flex-1 flex">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
             <Route
               path="/admin/*"
               element={
@@ -25,7 +23,7 @@ function App() {
                     <AdminRoutes />
                   </ProtectedRoutes>
                 ) : (
-                  <Navigate to="/login" replace />
+                  <Navigate to="/" replace />
                 )
               }
             />
