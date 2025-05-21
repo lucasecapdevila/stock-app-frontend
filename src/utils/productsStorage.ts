@@ -39,6 +39,11 @@ export const getProducts = (): Product[] => {
   return storedProducts ? JSON.parse(storedProducts) : [];
 };
 
+export const getProductById = (id: string): Product | undefined => {
+  const products = getProducts();
+  return products.find(product => product.id === id);
+};
+
 export const saveProducts = (products: Product[]) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
 };

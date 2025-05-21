@@ -20,16 +20,12 @@ const Dashboard = () => {
   };
 
   const handleEdit = (id: string) => {
-    const product = products.find(p => p.id === id);
-    alert(`Editando producto: ${product?.name}`);
+    navigate(`/admin/productos/editar/${id}`);
   };
 
   const handleAddProduct = () => {
     navigate('/admin/productos/nuevo');
   };
-
-  console.log(products);
-  
 
   return (
     <div className="flex-1 bg-gray-50 overflow-auto">
@@ -38,7 +34,7 @@ const Dashboard = () => {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div>
               <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Panel de Productos</h1>
-              <p className="text-sm sm:text-base text-gray-600">Aquí podrás crear, ver, actualizar y eliminar productos.</p>
+              <p className="text-sm sm:text-base text-gray-600">Aquí podrás gestionar los productos.</p>
             </div>
             <button
               onClick={handleAddProduct}

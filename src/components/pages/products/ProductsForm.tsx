@@ -1,36 +1,79 @@
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import type { Product } from '../../../types/dashboard.types';
-import { addProduct } from '../../../utils/productsStorage';
+import { addProduct, getProductById, updateProduct } from '../../../utils/productsStorage';
+import { useEffect } from 'react';
 
 type ProductFormInputs = Omit<Product, 'id'>;
 
-const ProductsForm = () => {
+interface ProductsFormProps {
+  editMode: boolean;
+  title: string;
+}
+
+const ProductsForm = ({ editMode, title }: ProductsFormProps) => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    setValue
   } = useForm<ProductFormInputs>();
 
+  const loadDataInForm = () => {
+    if (editMode) {
+      const product = getProductById(id!);
+      if (product) {
+        setValue('name', product.name);
+        setValue('category', product.category);
+        setValue('price', product.price);
+        setValue('stock', product.stock);
+      }
+    }
+  };
+
+  useEffect(() => {
+    loadDataInForm();
+  }, [id, editMode, setValue]);
+
   const onSubmit = (data: ProductFormInputs) => {
-    const newProduct: Product = {
-      id: Date.now().toString(),
-      ...data,
-      price: Number(data.price),
-      stock: Number(data.stock)
-    };
-    addProduct(newProduct);
-    alert('¡Producto creado exitosamente!');
-    reset(); // Reset form fields to empty values
+    if (editMode) {
+      const existingProduct = getProductById(id!);
+      if (!existingProduct) {
+        alert('Producto no encontrado');
+        navigate('/admin');
+        return;
+      }
+      const updatedProduct: Product = {
+        id: id!,
+        ...data,
+        price: Number(data.price),
+        stock: Number(data.stock)
+      };
+      updateProduct(updatedProduct);
+      alert('¡Producto actualizado exitosamente!');
+    } else {
+      const newProduct: Product = {
+        id: Date.now().toString(),
+        ...data,
+        price: Number(data.price),
+        stock: Number(data.stock)
+      };
+      addProduct(newProduct);
+      alert('¡Producto creado exitosamente!');
+    }
+    navigate('/admin');
   };
 
   return (
     <div className="flex-1 bg-gray-50 overflow-auto">
       <div className="h-full p-2 sm:p-8">
         <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-4 sm:p-6">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">Agregar Nuevo Producto</h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-6">
+            {title}
+          </h1>
           
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
@@ -140,7 +183,7 @@ const ProductsForm = () => {
             <div className="flex justify-end space-x-3">
               <button
                 type="button"
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/admin')}
                 className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Cancelar
@@ -149,7 +192,7 @@ const ProductsForm = () => {
                 type="submit"
                 className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                Guardar Producto
+                {editMode ? 'Actualizar Producto' : 'Guardar Producto'}
               </button>
             </div>
           </form>

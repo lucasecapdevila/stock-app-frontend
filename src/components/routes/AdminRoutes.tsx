@@ -6,7 +6,8 @@ const AdminRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Dashboard />} />
-      <Route path="/productos/nuevo" element={<ProductsForm />} />
+      <Route path="/productos/nuevo" element={<ProductsForm editMode={false} title='Crear nuevo producto' />} />
+      <Route path="/productos/editar/:id" element={<ProductsForm editMode={true} title='Editar producto' />} />
       {/* Add more admin routes here as needed */}
     </Routes>
   )
