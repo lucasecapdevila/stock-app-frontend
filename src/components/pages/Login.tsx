@@ -22,7 +22,7 @@ const Login = () => {
       // Store login state in sessionStorage
       sessionStorage.setItem('isLoggedIn', 'true')
       // Redirect to admin page
-      navigate('/admin')
+      navigate('/admin/', { replace: true })
     } else {
       setLoginError('Usuario o contraseña incorrectos')
     }
