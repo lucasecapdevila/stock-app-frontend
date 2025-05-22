@@ -1,11 +1,20 @@
 import { useForm } from 'react-hook-form'
 import { useState } from 'react'
-import { useNavigate } from 'react-router'
 import type { LoginFormInputs } from '../../types/login.types'
 
+interface UserCredentials {
+  password: string
+  role: string
+  lastLogin: string | null
+}
+
+interface CredentialsMap {
+  [key: string]: UserCredentials
+}
+
 const Login = () => {
-  const navigate = useNavigate()
   const [loginError, setLoginError] = useState<string>('')
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   
   const {
     register,
@@ -13,18 +22,55 @@ const Login = () => {
     formState: { errors },
   } = useForm<LoginFormInputs>()
 
-  const onSubmit = (data: LoginFormInputs) => {
-    // Hardcoded credentials for development
-    const validUsername = 'admin'
-    const validPassword = 'admin123'
+  const validateCredentials = async (username: string, password: string): Promise<boolean> => {
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 500))
+    
+    // In a real app, this would be an API call
+    const validCredentials: CredentialsMap = {
+      'juanpilopez': {
+        password: 'juanpilopez123',
+        role: 'admin',
+        lastLogin: null
+      }
+    }
 
-    if (data.username === validUsername && data.password === validPassword) {
-      // Store login state in sessionStorage
-      sessionStorage.setItem('isLoggedIn', 'true')
-      // Redirect to admin page
-      navigate('/admin/', { replace: true })
-    } else {
-      setLoginError('Usuario o contraseña incorrectos')
+    const user = validCredentials[username]
+    
+    if (!user) {
+      throw new Error('Usuario no encontrado')
+    }
+
+    if (user.password !== password) {
+      throw new Error('Contraseña incorrecta')
+    }
+
+    // Update last login time
+    user.lastLogin = new Date().toISOString()
+    
+    return true
+  }
+
+  const onSubmit = async (data: LoginFormInputs) => {
+    try {
+      setIsLoading(true)
+      setLoginError('')
+      
+      const isValid = await validateCredentials(data.username, data.password)
+      
+      if (isValid) {
+        // Store login state and user info in sessionStorage
+        sessionStorage.setItem('isLoggedIn', 'true')
+        sessionStorage.setItem('username', data.username)
+        sessionStorage.setItem('loginTime', new Date().toISOString())
+        
+        // Redirect to admin page
+        window.location.href = '/admin'
+      }
+    } catch (error) {
+      setLoginError(error instanceof Error ? error.message : 'Error al iniciar sesión')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -47,6 +93,7 @@ const Login = () => {
                 type="text"
                 className="relative block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 placeholder="Nombre de Usuario"
+                disabled={isLoading}
                 {...register('username', {
                   required: 'El nombre de usuario es obligatorio',
                   minLength: {
@@ -72,6 +119,7 @@ const Login = () => {
                 type="password"
                 className="relative block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 placeholder="Contraseña"
+                disabled={isLoading}
                 {...register('password', {
                   required: 'La contraseña es obligatoria',
                   minLength: {
@@ -89,9 +137,10 @@ const Login = () => {
           <div>
             <button
               type="submit"
-              className="group relative flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              disabled={isLoading}
+              className="group relative flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-indigo-400 disabled:cursor-not-allowed"
             >
-              Ingresar
+              {isLoading ? 'Ingresando...' : 'Ingresar'}
             </button>
             {loginError && (
               <p className="mt-2 text-center text-sm text-red-600">{loginError}</p>
