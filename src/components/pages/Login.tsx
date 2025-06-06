@@ -100,6 +100,10 @@ const Login = () => {
                     value: 5,
                     message: 'El nombre de usuario debe tener al menos 5 caracteres',
                   },
+                  maxLength: {
+                    value: 25,
+                    message: 'El nombre de usuario debe tener como máximo 25 caracteres',
+                  },
                   pattern: {
                     value: /^[a-z]+$/,
                     message: 'El nombre de usuario solo puede contener letras minúsculas',

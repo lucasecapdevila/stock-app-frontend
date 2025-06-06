@@ -91,8 +91,8 @@ const ProductsForm = ({ editMode, title }: ProductsFormProps) => {
                     message: 'El nombre debe tener al menos 3 caracteres'
                   },
                   maxLength: {
-                    value: 80,
-                    message: 'El nombre debe tener como máximo 80 caracteres'
+                    value: 100,
+                    message: 'El nombre debe tener como máximo 100 caracteres'
                   }
                 })}
               />
