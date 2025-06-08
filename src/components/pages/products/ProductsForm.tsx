@@ -1,8 +1,8 @@
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router';
 import type { Product } from '../../../types/dashboard.types';
-import { addProduct, getProductById, updateProduct } from '../../../utils/productsStorage';
-import { useEffect } from 'react';
+import { addProduct, getProductById, updateProduct } from '../../../utils/queries';
+import { useEffect, useCallback } from 'react';
 
 type ProductFormInputs = Omit<Product, 'id'>;
 
@@ -22,7 +22,7 @@ const ProductsForm = ({ editMode, title }: ProductsFormProps) => {
     setValue
   } = useForm<ProductFormInputs>();
 
-  const loadDataInForm = () => {
+  const loadDataInForm = useCallback(() => {
     if (editMode) {
       const product = getProductById(id!);
       if (product) {
@@ -32,11 +32,11 @@ const ProductsForm = ({ editMode, title }: ProductsFormProps) => {
         setValue('stock', product.stock);
       }
     }
-  };
+  }, [editMode, id, setValue]);
 
   useEffect(() => {
     loadDataInForm();
-  }, [id, editMode, setValue]);
+  }, [loadDataInForm]);
 
   const onSubmit = (data: ProductFormInputs) => {
     if (editMode) {

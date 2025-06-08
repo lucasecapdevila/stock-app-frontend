@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { useState } from 'react'
+import { useNavigate } from 'react-router'
 import type { LoginFormInputs } from '../../types/login.types'
 
 interface UserCredentials {
@@ -13,6 +14,7 @@ interface CredentialsMap {
 }
 
 const Login = () => {
+  const navigate = useNavigate()
   const [loginError, setLoginError] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
   
@@ -64,8 +66,8 @@ const Login = () => {
         sessionStorage.setItem('username', data.username)
         sessionStorage.setItem('loginTime', new Date().toISOString())
         
-        // Redirect to admin page
-        window.location.href = '/admin'
+        // Redirect to admin page using React Router
+        navigate('/admin')
       }
     } catch (error) {
       setLoginError(error instanceof Error ? error.message : 'Error al iniciar sesión')

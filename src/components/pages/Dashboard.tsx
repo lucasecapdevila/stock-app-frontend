@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import type { Product } from '../../types/dashboard.types';
-import { getProducts, deleteProduct, initializeProducts } from '../../utils/productsStorage';
+import { getProducts, deleteProduct, initializeProducts } from '../../utils/queries';
 
 const Dashboard = () => {
   const navigate = useNavigate();
