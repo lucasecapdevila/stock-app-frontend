@@ -3,11 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import type { Product } from '../../types/dashboard.types';
 import { getProductsAPI, deleteProductAPI, updateProductAPI } from '../../utils/queries';
 
+type SortConfig = {
+  key: 'name' | 'type' | 'price' | 'stock' | null;
+  direction: 'asc' | 'desc';
+};
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [editingStock, setEditingStock] = useState<{ [key: string]: number }>({});
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: 'asc' });
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -17,8 +23,38 @@ const Dashboard = () => {
     fetchProducts();
   }, []);
 
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const handleSort = (key: 'name' | 'type' | 'price' | 'stock') => {
+    setSortConfig(current => ({
+      key,
+      direction: current.key === key && current.direction === 'asc' ? 'desc' : 'asc'
+    }));
+  };
+
+  const getSortedProducts = (products: Product[]) => {
+    if (!sortConfig.key) return products;
+
+    return [...products].sort((a, b) => {
+      const key = sortConfig.key as 'name' | 'type' | 'price' | 'stock';
+      if (key === 'price' || key === 'stock') {
+        return sortConfig.direction === 'asc' 
+          ? a[key] - b[key]
+          : b[key] - a[key];
+      }
+      
+      // For string comparisons (name and type)
+      const aValue = a[key].toLowerCase();
+      const bValue = b[key].toLowerCase();
+      
+      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  };
+
+  const filteredProducts = getSortedProducts(
+    products.filter(product =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
   );
 
   const handleDelete = async (id: string) => {
@@ -138,17 +174,49 @@ const Dashboard = () => {
                 <table className="w-full bg-white border border-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-4 sm:px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Nombre
+                      <th 
+                        className="px-4 sm:px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                        onClick={() => handleSort('name')}
+                      >
+                        <div className="flex items-center gap-1">
+                          Nombre
+                          {sortConfig.key === 'name' && (
+                            <span>{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                          )}
+                        </div>
                       </th>
-                      <th className="px-4 sm:px-6 py-3 border-b border-gray-200 text-xs text-center font-medium text-gray-500 uppercase tracking-wider">
-                        Categoría
+                      <th 
+                        className="px-4 sm:px-6 py-3 border-b border-gray-200 text-xs text-center font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                        onClick={() => handleSort('type')}
+                      >
+                        <div className="flex items-center justify-center gap-1">
+                          Categoría
+                          {sortConfig.key === 'type' && (
+                            <span>{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                          )}
+                        </div>
                       </th>
-                      <th className="px-4 sm:px-6 py-3 border-b border-gray-200 text-xs text-center font-medium text-gray-500 uppercase tracking-wider">
-                        Precio
+                      <th 
+                        className="px-4 sm:px-6 py-3 border-b border-gray-200 text-xs text-center font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                        onClick={() => handleSort('price')}
+                      >
+                        <div className="flex items-center justify-center gap-1">
+                          Precio
+                          {sortConfig.key === 'price' && (
+                            <span>{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                          )}
+                        </div>
                       </th>
-                      <th className="px-4 sm:px-6 py-3 border-b border-gray-200 text-xs text-center font-medium text-gray-500 uppercase tracking-wider">
-                        Stock
+                      <th 
+                        className="px-4 sm:px-6 py-3 border-b border-gray-200 text-xs text-center font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                        onClick={() => handleSort('stock')}
+                      >
+                        <div className="flex items-center justify-center gap-1">
+                          Stock
+                          {sortConfig.key === 'stock' && (
+                            <span>{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                          )}
+                        </div>
                       </th>
                       <th className="px-4 sm:px-6 py-3 border-b border-gray-200 text-xs text-center font-medium text-gray-500 uppercase tracking-wider">
                         Acciones
