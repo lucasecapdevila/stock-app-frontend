@@ -39,7 +39,7 @@ export const getProductByIdAPI = async (id: string): Promise<Response> => {
   }
 };
 
-export const addProductAPI = async (newProduct: Product): Promise<Response> => {
+export const addProductAPI = async (newProduct: Omit<Product, 'id'>): Promise<Response> => {
   try {
     const token = getAuthToken();
     if (!token) throw new Error('No authentication token found');

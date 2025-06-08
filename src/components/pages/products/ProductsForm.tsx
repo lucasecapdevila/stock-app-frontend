@@ -1,8 +1,8 @@
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router';
 import type { Product } from '../../../types/dashboard.types';
-import { addProduct, getProductById, updateProduct } from '../../../utils/queries';
-import { useEffect, useCallback } from 'react';
+import { addProductAPI, getProductByIdAPI, updateProductAPI } from '../../../utils/queries';
+import { useEffect } from 'react';
 
 type ProductFormInputs = Omit<Product, 'id'>;
 
@@ -22,49 +22,68 @@ const ProductsForm = ({ editMode, title }: ProductsFormProps) => {
     setValue
   } = useForm<ProductFormInputs>();
 
-  const loadDataInForm = useCallback(() => {
+  useEffect(() => {
     if (editMode) {
-      const product = getProductById(id!);
-      if (product) {
+      loadDataInForm();
+    }
+  }, []);
+
+  const loadDataInForm = async () => {
+    try {
+      const response = await getProductByIdAPI(id!);
+      if (response.status === 200) {
+        const product = await response.json();
         setValue('name', product.name);
-        setValue('category', product.category);
+        setValue('type', product.type);
         setValue('price', product.price);
         setValue('stock', product.stock);
-      }
-    }
-  }, [editMode, id, setValue]);
-
-  useEffect(() => {
-    loadDataInForm();
-  }, [loadDataInForm]);
-
-  const onSubmit = (data: ProductFormInputs) => {
-    if (editMode) {
-      const existingProduct = getProductById(id!);
-      if (!existingProduct) {
-        alert('Producto no encontrado');
+      } else {
+        alert('Error al cargar el producto');
         navigate('/admin');
-        return;
       }
-      const updatedProduct: Product = {
-        id: id!,
-        ...data,
-        price: Number(data.price),
-        stock: Number(data.stock)
-      };
-      updateProduct(updatedProduct);
-      alert('¡Producto actualizado exitosamente!');
-    } else {
-      const newProduct: Product = {
-        id: Date.now().toString(),
-        ...data,
-        price: Number(data.price),
-        stock: Number(data.stock)
-      };
-      addProduct(newProduct);
-      alert('¡Producto creado exitosamente!');
+    } catch (error) {
+      console.error('Error loading product:', error);
+      alert('Error al cargar el producto');
+      navigate('/admin');
     }
-    navigate('/admin');
+  };
+
+  const onSubmit = async (data: ProductFormInputs) => {
+    try {
+      if (editMode) {
+        if (!id) {
+          alert('ID del producto no encontrado');
+          navigate('/admin');
+          return;
+        }
+
+        const updatedProduct: Product = {
+          id,
+          ...data,
+          price: Number(data.price),
+          stock: Number(data.stock)
+        };
+
+        const response = await updateProductAPI(id, updatedProduct);
+        if (response.status === 200) {
+          alert(`El producto ${updatedProduct.name} fue modificado exitosamente.`);
+          navigate('/admin');
+        } else {
+          alert('Error al actualizar el producto');
+        }
+      } else {
+        const response = await addProductAPI(data);
+        if (response.status === 201) {
+          alert(`El producto fue creado exitosamente.`);
+          navigate('/admin');
+        } else {
+          alert('Error al crear el producto');
+        }
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Ha ocurrido un error. Por favor, intente nuevamente.');
+    }
   };
 
   return (
@@ -102,29 +121,23 @@ const ProductsForm = ({ editMode, title }: ProductsFormProps) => {
             </div>
 
             <div>
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700">
-                Categoría
+              <label htmlFor="type" className="block text-sm font-medium text-gray-700">
+                Tipo
               </label>
               <select
-                id="category"
+                id="type"
                 className="mt-1 block w-full rounded-md border-2 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base py-2 px-3"
-                {...register('category', {
-                  required: 'La categoría es obligatoria'
+                {...register('type', {
+                  required: 'El tipo es obligatorio'
                 })}
               >
-                <option value="">Seleccione una categoría</option>
-                <option value="Filtros">Filtros</option>
-                <option value="Frenos">Frenos</option>
-                <option value="Motor">Motor</option>
-                <option value="Lubricantes">Lubricantes</option>
-                <option value="Suspensión">Suspensión</option>
-                <option value="Transmisión">Transmisión</option>
-                <option value="Refrigeración">Refrigeración</option>
-                <option value="Sensores">Sensores</option>
-                <option value="Dirección">Dirección</option>
+                <option value="">Seleccione un tipo</option>
+                <option value="Económico">Económico</option>
+                <option value="Intermedio">Intermedio</option>
+                <option value="Premium">Premium</option>
               </select>
-              {errors.category && (
-                <p className="mt-1 text-sm text-red-600">{errors.category.message}</p>
+              {errors.type && (
+                <p className="mt-1 text-sm text-red-600">{errors.type.message}</p>
               )}
             </div>
 
@@ -165,13 +178,13 @@ const ProductsForm = ({ editMode, title }: ProductsFormProps) => {
               <input
                 type="number"
                 id="stock"
-                min="1"
+                min="0"
                 className="mt-1 block w-full rounded-md border-2 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base py-2 px-3"
                 {...register('stock', {
                   required: 'El stock es obligatorio',
                   valueAsNumber: true,
                   validate: {
-                    min: (value) => value >= 1 || 'El stock debe ser mayor o igual a 1'
+                    min: (value) => value >= 0 || 'El stock debe ser mayor o igual a 0'
                   }
                 })}
               />

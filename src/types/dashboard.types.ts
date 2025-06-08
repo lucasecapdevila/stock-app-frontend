@@ -1,7 +1,9 @@
+export type ProductType = 'Económico' | 'Intermedio' | 'Premium';
+
 export interface Product {
   id: string;
   name: string;
-  category: string;
+  type: ProductType;
   price: number;
   stock: number;
 }
