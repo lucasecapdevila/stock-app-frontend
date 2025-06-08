@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router'
+import { Route, Routes } from 'react-router-dom'
 import Dashboard from '../pages/Dashboard'
 import ProductsForm from '../pages/products/ProductsForm'
 

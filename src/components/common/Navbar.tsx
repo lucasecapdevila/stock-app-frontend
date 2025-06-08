@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
 const Navbar = () => {
@@ -9,6 +9,7 @@ const Navbar = () => {
   const handleLogout = () => {
     if (window.confirm('¿Estás seguro de que deseas cerrar sesión?')) {
       sessionStorage.removeItem('isLoggedIn');
+      sessionStorage.removeItem('userSession');
       navigate('/');
     }
   };
@@ -59,17 +60,8 @@ const Navbar = () => {
           {/* Desktop menu */}
           {isLoggedIn && (
             <div className="hidden md:flex items-center space-x-4">
-              <Link to="/" className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
-                Dashboard
-              </Link>
-              <Link to="/productos" className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
-                Productos
-              </Link>
-              <Link to="/categorias" className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
-                Categorías
-              </Link>
-              <Link to="/reportes" className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
-                Reportes
+              <Link to="/admin" className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                Panel de Productos
               </Link>
             </div>
           )}
@@ -91,17 +83,8 @@ const Navbar = () => {
         {isLoggedIn && isMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              <Link to="/" className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-50">
-                Dashboard
-              </Link>
-              <Link to="/productos" className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-50">
-                Productos
-              </Link>
-              <Link to="/categorias" className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-50">
-                Categorías
-              </Link>
-              <Link to="/reportes" className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-50">
-                Reportes
+              <Link to="/admin" className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-50">
+                Panel de Productos
               </Link>
               <button 
                 onClick={handleLogout}
