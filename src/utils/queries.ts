@@ -1,20 +1,10 @@
 import type { Product } from '../types/dashboard.types';
-import type { User, UserSession } from '../types/login.types';
+import type { User } from '../types/login.types';
+import { fetchWithAuth } from './auth';
 
 const URI_PRODUCTS = import.meta.env.VITE_API_PRODUCTS;
 const URI_USERS = import.meta.env.VITE_API_USERS;
 const URI_LOGIN = import.meta.env.VITE_API_LOGIN;
-
-const getAuthToken = (): string | null => {
-  const session = sessionStorage.getItem('userSession');
-  if (!session) return null;
-  try {
-    const { token } = JSON.parse(session) as UserSession;
-    return token;
-  } catch {
-    return null;
-  }
-};
 
 //----------------------- PRODUCTS -----------------------//
 
@@ -41,18 +31,13 @@ export const getProductByIdAPI = async (id: string): Promise<Response> => {
 
 export const addProductAPI = async (newProduct: Omit<Product, 'id'>): Promise<Response> => {
   try {
-    const token = getAuthToken();
-    if (!token) throw new Error('No authentication token found');
-
-    const response = await fetch(URI_PRODUCTS, {
+    return await fetchWithAuth(URI_PRODUCTS, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-token': token
       },
       body: JSON.stringify(newProduct),
     });
-    return response;
   } catch (error) {
     console.error('Error adding product:', error);
     throw error;
@@ -61,18 +46,13 @@ export const addProductAPI = async (newProduct: Omit<Product, 'id'>): Promise<Re
 
 export const updateProductAPI = async (id: string, updatedProduct: Product): Promise<Response> => {
   try {
-    const token = getAuthToken();
-    if (!token) throw new Error('No authentication token found');
-
-    const response = await fetch(`${URI_PRODUCTS}/${id}`, {
+    return await fetchWithAuth(`${URI_PRODUCTS}/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'x-token': token
       },
       body: JSON.stringify(updatedProduct),
     });
-    return response;
   } catch (error) {
     console.error('Error updating product:', error);
     throw error;
@@ -81,16 +61,9 @@ export const updateProductAPI = async (id: string, updatedProduct: Product): Pro
 
 export const deleteProductAPI = async (id: string): Promise<Response> => {
   try {
-    const token = getAuthToken();
-    if (!token) throw new Error('No authentication token found');
-
-    const response = await fetch(`${URI_PRODUCTS}/${id}`, {
+    return await fetchWithAuth(`${URI_PRODUCTS}/${id}`, {
       method: 'DELETE',
-      headers: {
-        'x-token': token
-      }
     });
-    return response;
   } catch (error) {
     console.error('Error deleting product:', error);
     throw error;
@@ -138,18 +111,13 @@ export const createUserAPI = async (newUser: Omit<User, 'id'>): Promise<Response
 
 export const updateUserAPI = async (id: string, user: Partial<User>): Promise<Response | null> => {
   try {
-    const token = getAuthToken();
-    if (!token) return null;
-
-    const response = await fetch(`${URI_USERS}/${id}`, {
+    return await fetchWithAuth(`${URI_USERS}/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'x-token': token
       },
       body: JSON.stringify(user),
     });
-    return response;
   } catch (error) {
     console.error('Error updating user:', error);
     return null;
@@ -158,16 +126,9 @@ export const updateUserAPI = async (id: string, user: Partial<User>): Promise<Re
 
 export const deleteUserAPI = async (id: string): Promise<Response | null> => {
   try {
-    const token = getAuthToken();
-    if (!token) return null;
-
-    const response = await fetch(`${URI_USERS}/${id}`, {
+    return await fetchWithAuth(`${URI_USERS}/${id}`, {
       method: 'DELETE',
-      headers: {
-        'x-token': token
-      }
     });
-    return response;
   } catch (error) {
     console.error('Error deleting user:', error);
     return null;

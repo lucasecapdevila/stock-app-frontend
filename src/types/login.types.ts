@@ -12,6 +12,7 @@ export interface User {
 
 export interface UserSession {
   token: string;
+  refreshToken: string;
   user: User;
 }
 
