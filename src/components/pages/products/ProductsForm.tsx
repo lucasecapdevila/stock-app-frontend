@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router-dom';
 import type { Product } from '../../../types/dashboard.types';
 import { addProductAPI, getProductByIdAPI, updateProductAPI } from '../../../utils/queries';
 import { useEffect } from 'react';
@@ -58,7 +58,6 @@ const ProductsForm = ({ editMode, title }: ProductsFormProps) => {
         }
 
         const updatedProduct: Product = {
-          id,
           ...data,
           price: Number(data.price),
           stock: Number(data.stock)

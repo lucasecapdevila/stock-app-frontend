@@ -1,21 +1,25 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import type { Product } from '../../types/dashboard.types';
-import { getProducts, deleteProduct, initializeProducts } from '../../utils/queries';
+import { getProductsAPI, deleteProductAPI } from '../../utils/queries';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    initializeProducts(); // Initialize with mock products if empty
-    setProducts(getProducts());
+    const fetchProducts = async () => {
+      const productsData = await getProductsAPI();
+      setProducts(productsData);
+    };
+    fetchProducts();
   }, []);
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm('¿Estás seguro de que deseas eliminar este producto?')) {
-      deleteProduct(id);
-      setProducts(getProducts()); // Refresh the products list
+      await deleteProductAPI(id);
+      const updatedProducts = await getProductsAPI();
+      setProducts(updatedProducts);
     }
   };
 
@@ -63,45 +67,45 @@ const Dashboard = () => {
                       <th className="px-4 sm:px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Nombre
                       </th>
-                      <th className="px-4 sm:px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 sm:px-6 py-3 border-b border-gray-200 text-xs text-center font-medium text-gray-500 uppercase tracking-wider">
                         Categoría
                       </th>
-                      <th className="px-4 sm:px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 sm:px-6 py-3 border-b border-gray-200 text-xs text-center font-medium text-gray-500 uppercase tracking-wider">
                         Precio
                       </th>
-                      <th className="px-4 sm:px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 sm:px-6 py-3 border-b border-gray-200 text-xs text-center font-medium text-gray-500 uppercase tracking-wider">
                         Stock
                       </th>
-                      <th className="px-4 sm:px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 sm:px-6 py-3 border-b border-gray-200 text-xs text-center font-medium text-gray-500 uppercase tracking-wider">
                         Acciones
                       </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
                     {products.map((product) => (
-                      <tr key={product.id} className="hover:bg-gray-50">
+                      <tr key={product._id} className="hover:bg-gray-50">
                         <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {product.name}
                         </td>
-                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {product.category}
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
+                          {product.type}
                         </td>
-                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
                           ${product.price}
                         </td>
-                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
                           {product.stock}
                         </td>
-                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          <div className="flex space-x-2">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
+                          <div className="flex justify-center space-x-2">
                             <button 
-                              onClick={() => handleEdit(product.id)}
+                              onClick={() => handleEdit(product._id)}
                               className="text-blue-600 hover:text-blue-900"
                             >
                               Editar
                             </button>
                             <button 
-                              onClick={() => handleDelete(product.id)}
+                              onClick={() => handleDelete(product._id)}
                               className="text-red-600 hover:text-red-900"
                             >
                               Eliminar

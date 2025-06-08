@@ -1,75 +1,71 @@
 import { useForm } from 'react-hook-form'
-import { useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import type { LoginFormInputs } from '../../types/login.types'
-
-interface UserCredentials {
-  password: string
-  role: string
-  lastLogin: string | null
-}
-
-interface CredentialsMap {
-  [key: string]: UserCredentials
-}
+import { loginAPI } from '../../utils/queries'
 
 const Login = () => {
   const navigate = useNavigate()
   const [loginError, setLoginError] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
   
+  useEffect(() => {
+    const handlePopState = () => {
+      // Check if we're on the admin page
+      if (window.location.pathname.startsWith('/admin')) {
+        console.log('Back button pressed on admin page, logging out...')
+        // Clear session
+        sessionStorage.removeItem('isLoggedIn')
+        sessionStorage.removeItem('userSession')
+        
+        // Add a small delay before navigation
+        setTimeout(() => {
+          console.log('Redirecting to login page...')
+          navigate('/', { replace: true })
+        }, 100) // 100ms delay
+      }
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+    }
+  }, [navigate])
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormInputs>()
 
-  const validateCredentials = async (username: string, password: string): Promise<boolean> => {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    // In a real app, this would be an API call
-    const validCredentials: CredentialsMap = {
-      'juanpilopez': {
-        password: 'juanpilopez123',
-        role: 'admin',
-        lastLogin: null
-      }
-    }
-
-    const user = validCredentials[username]
-    
-    if (!user) {
-      throw new Error('Usuario no encontrado')
-    }
-
-    if (user.password !== password) {
-      throw new Error('Contraseña incorrecta')
-    }
-
-    // Update last login time
-    user.lastLogin = new Date().toISOString()
-    
-    return true
-  }
-
   const onSubmit = async (data: LoginFormInputs) => {
     try {
+      console.log('Login attempt with data:', data)
       setIsLoading(true)
       setLoginError('')
       
-      const isValid = await validateCredentials(data.username, data.password)
+      console.log('Calling loginAPI...')
+      const response = await loginAPI(data)
+      console.log('API Response status:', response.status)
       
-      if (isValid) {
-        // Store login state and user info in sessionStorage
-        sessionStorage.setItem('isLoggedIn', 'true')
-        sessionStorage.setItem('username', data.username)
-        sessionStorage.setItem('loginTime', new Date().toISOString())
-        
-        // Redirect to admin page using React Router
-        navigate('/admin')
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor')
       }
+      
+      const responseData = await response.json()
+      console.log('API Response data:', responseData)
+      
+      const { token, user } = responseData
+      
+      // Store login state and user info in sessionStorage
+      sessionStorage.setItem('isLoggedIn', 'true')
+      sessionStorage.setItem('userSession', JSON.stringify({ token, user }))
+      
+      console.log('Login successful, redirecting to /admin...')
+      navigate('/admin')
     } catch (error) {
+      console.error('Login error:', error)
       setLoginError(error instanceof Error ? error.message : 'Error al iniciar sesión')
     } finally {
       setIsLoading(false)

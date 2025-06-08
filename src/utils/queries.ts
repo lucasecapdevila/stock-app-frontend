@@ -176,7 +176,7 @@ export const deleteUserAPI = async (id: string): Promise<Response | null> => {
 
 //----------------------- AUTH -----------------------//
 
-export const loginAPI = async (credentials: { email: string; password: string }): Promise<Response | null> => {
+export const loginAPI = async (credentials: { username: string; password: string }): Promise<Response> => {
   try {
     const response = await fetch(URI_LOGIN, {
       method: 'POST',
@@ -185,9 +185,15 @@ export const loginAPI = async (credentials: { email: string; password: string })
       },
       body: JSON.stringify(credentials),
     });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Error al iniciar sesión');
+    }
+    
     return response;
   } catch (error) {
     console.error('Error during login:', error);
-    return null;
+    throw error;
   }
 }; 

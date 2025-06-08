@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
 const Navbar = () => {
@@ -9,6 +9,7 @@ const Navbar = () => {
   const handleLogout = () => {
     if (window.confirm('¿Estás seguro de que deseas cerrar sesión?')) {
       sessionStorage.removeItem('isLoggedIn');
+      sessionStorage.removeItem('userSession');
       navigate('/');
     }
   };

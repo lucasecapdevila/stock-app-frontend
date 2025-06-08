@@ -1,7 +1,7 @@
 export type ProductType = 'Económico' | 'Intermedio' | 'Premium';
 
 export interface Product {
-  id: string;
+  _id: string;
   name: string;
   type: ProductType;
   price: number;
