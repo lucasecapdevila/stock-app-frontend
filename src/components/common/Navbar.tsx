@@ -1,6 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import logo from '../../assets/logo.jpg';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -72,6 +74,7 @@ const Navbar = () => {
                 onClick={handleLogout}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 flex items-center gap-2"
               >
+                <FontAwesomeIcon icon={faRightFromBracket} />
                 Cerrar Sesión
               </button>
             )}
